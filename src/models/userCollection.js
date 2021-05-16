@@ -31,15 +31,16 @@ userSchema.methods.toJSON = function () {
 }
 //Find the user when they Login
 userSchema.statics.findByCredential = async (email, password) => {
-  const user = await Users.findOne({
-    email: email,
-  })
-  if (!user) throw new Error('E-Mail Not Found!!!')
-  const isMatch = bcryptjs.compare(password, user.password)
-  if (!isMatch) {
-    throw new Error('Unable To Login')
-  }
-  return user
+  try {
+    const user = await Users.findOne({
+      email,
+    })
+    if (!user) throw new Error('E-Mail Not Found!!!')
+    const isMatch = await bcryptjs.compare(password, user.password)
+    if (!isMatch) throw new Error('Unable To Login')
+
+    return user
+  } catch (error) {}
 }
 
 //Hashing The Password Before Saving
